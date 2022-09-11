@@ -7,7 +7,9 @@ public class playermovement : MonoBehaviour
     public float speed = 8f;
     public float jumpingPower = 16f;
     public float jumps = 1;
+    private bool isJumping = false;
     private bool isFacingRight = true;
+    public Animator animate;
 
     private bool canDash = true;
     private bool isDashing;
@@ -16,10 +18,23 @@ public class playermovement : MonoBehaviour
     public float dashingCooldown = 1f;
 
 
+
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
+
+    private void FixedUpdate()
+    {
+        if (isDashing)
+        {
+            return;
+        }
+
+        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+
+        animate = gameObject.GetComponent<Animator>();
+    }
 
     private void Update()
     {
@@ -29,6 +44,9 @@ public class playermovement : MonoBehaviour
         }
 
         horizontal = Input.GetAxisRaw("Horizontal");
+
+        animate.SetFloat("Speed", Mathf.Abs(horizontal));
+
 
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
@@ -48,15 +66,6 @@ public class playermovement : MonoBehaviour
         Flip();
     }
 
-    private void FixedUpdate()
-    {
-        if (isDashing)
-        {
-            return;
-        }
-
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-    }
 
     private bool IsGrounded()
     {
